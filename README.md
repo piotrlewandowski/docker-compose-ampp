@@ -64,5 +64,7 @@ Default version of PHP installed is 7.3
 phpMyAdmin is configured to run on port 8080, so to access it, go to `http://localhost:8080/`.
 
 Use following credentials to log in:
+
 username: `root`
+
 password: `docker`
