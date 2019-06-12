@@ -37,7 +37,7 @@ _**APACHE_LOG_DIR**_
 
 This will be used to store Apache logs.
 
-_**MYSQL_DATA_DIR**__
+_**MYSQL_DATA_DIR**_
 
 This is MySQL data directory. All your MySQL data files will be stored here.
 
