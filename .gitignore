@@ -1,0 +1,19 @@
+# Editors and IDEs
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+ # General
+.DS_Store
+
+ # Thumbnails
+._*
+Thumbs.db
+
+ # Dependency directories
+vendor/*
+
+# Build files
+html

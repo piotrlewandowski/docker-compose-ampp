@@ -1,0 +1,69 @@
+version: "3.7"
+services:
+  php:
+    image: php:7.3-fpm-alpine
+    build: ./.docker/php
+    container_name: docker-compose-ampp-php
+    restart: always
+    networks:
+      - AMPP
+    environment:
+      docker: "true"
+    volumes:
+      - ./:/var/www
+      - ${DOCUMENT_ROOT-./public}:/var/www/html
+
+  apache:
+    image: httpd:2.4-alpine
+    build: ./.docker/apache
+    container_name: docker-compose-ampp-apache
+    restart: always
+    depends_on:
+      - php
+    networks:
+      - AMPP
+    ports:
+      - ${HOST_MACHINE_UNSECURE_HOST_PORT}:${HOST_MACHINE_UNSECURE_HOST_PORT}
+      - ${HOST_MACHINE_SECURE_HOST_PORT}:${HOST_MACHINE_SECURE_HOST_PORT}
+    volumes:
+      - ./:/var/www
+      - ${DOCUMENT_ROOT-./public}:/var/www/html
+      - ${VHOSTS_DIR-./.docker/apache/docker.apache.conf}:/usr/local/apache2/conf.d/docker.apache.conf
+      - ${APACHE_LOG_DIR-./logs/apache2}:/usr/local/apache2/logs
+
+  mysql:
+    image: mysql:5.7
+    container_name: docker-compose-ampp-mysql
+    restart: always
+    volumes:
+      - ${MYSQL_DATA_DIR-./data/mysql}:/var/lib/mysql/
+      - ./.docker/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - AMPP
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--skip-character-set-client-handshake']
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: docker-compose-ampp-phpmyadmin
+    restart: always
+    links:
+      - mysql:mysql
+    ports:
+      - 8080:${HOST_MACHINE_UNSECURE_HOST_PORT}
+    networks:
+      - AMPP
+    environment:
+      PMA_HOST: ${MYSQL_CONNECTION}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+networks:
+  AMPP:
